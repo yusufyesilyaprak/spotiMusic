@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example.spotiMusic</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>spotiMusic</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name/>
 	<description/>

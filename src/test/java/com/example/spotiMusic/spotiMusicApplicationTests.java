@@ -1,10 +1,10 @@
-package com.example.spotiMusic.demo;
+package com.example.spotiMusic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class spotiMusicApplicationTests {
 
 	@Test
 	void contextLoads() {
