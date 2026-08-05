@@ -2,82 +2,80 @@ package com.example.spotiMusic.service;
 
 import com.example.spotiMusic.dto.ArtistRequest;
 import com.example.spotiMusic.dto.ArtistResponse;
-import com.example.spotiMusic.entity.Artist;
+import com.example.spotiMusic.entity.ArtistEntity;
 import com.example.spotiMusic.exception.ArtistNotFoundException;
 import com.example.spotiMusic.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ArtistService {
+public class ArtistService implements IArtistService {
 
     private final ArtistRepository artistRepository;
 
+    @Override
     public ArtistResponse createArtist(ArtistRequest request) {
         if (artistRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("Bu isimde bir sanatçı zaten mevcut.");
+            throw new IllegalArgumentException("An artist with this name already exists.");
         }
 
-        Artist artist = new Artist();
-        artist.setName(request.getName());
-        artist.setCountry(request.getCountry());
-        artist.setBiography(request.getBiography());
-        artist.setBirthDate(request.getBirthDate());
+        ArtistEntity entity = ArtistEntity.builder()
+                .name(request.getName())
+                .country(request.getCountry())
+                .biography(request.getBiography())
+                .birthDate(request.getBirthDate())
+                .createdDate(LocalDateTime.now())
+                .build();
 
-        Artist savedArtist = artistRepository.save(artist);
-        return mapToResponse(savedArtist);
+        ArtistEntity savedEntity = artistRepository.save(entity);
+        return mapToResponse(savedEntity);
     }
 
-    public List<ArtistResponse> getAllArtists() {
-        return artistRepository.findAll().stream()
+    @Override
+    public List<ArtistResponse> searchArtistsByName(String name) {
+        List<ArtistEntity> entities = artistRepository.findByNameContainingIgnoreCase(name);
+        return entities.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ArtistResponse getArtistById(Long id) {
-        Artist artist = artistRepository.findById(id)
-                .orElseThrow(() -> new ArtistNotFoundException("Sanatçı bulunamadı ID: " + id));
-        return mapToResponse(artist);
+        ArtistEntity entity = artistRepository.findById(id)
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + id));
+        return mapToResponse(entity);
     }
 
-    public ArtistResponse updateArtist(Long id, ArtistRequest request) {
-        Artist artist = artistRepository.findById(id)
-                .orElseThrow(() -> new ArtistNotFoundException("Sanatçı bulunamadı ID: " + id));
-
-        artist.setName(request.getName());
-        artist.setCountry(request.getCountry());
-        artist.setBiography(request.getBiography());
-        artist.setBirthDate(request.getBirthDate());
-
-        Artist updatedArtist = artistRepository.save(artist);
-        return mapToResponse(updatedArtist);
+    @Override
+    public List<ArtistResponse> getAllArtists() {
+        List<ArtistEntity> entities = artistRepository.findAll();
+        return entities.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
+    @Override
     public void deleteArtist(Long id) {
         if (!artistRepository.existsById(id)) {
-            throw new ArtistNotFoundException("Sanatçı bulunamadı ID: " + id);
+            throw new ArtistNotFoundException("Artist not found with id: " + id);
         }
         artistRepository.deleteById(id);
     }
 
-    public List<ArtistResponse> searchArtistsByName(String name) {
-        return artistRepository.findByNameContainingIgnoreCase(name).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    private ArtistResponse mapToResponse(Artist artist) {
-        return new ArtistResponse(
-                artist.getId(),
-                artist.getName(),
-                artist.getCountry(),
-                artist.getBiography(),
-                artist.getBirthDate(),
-                artist.getCreatedDate()
-        );
+    // Entity'den Response DTO'ya dönüştürme işlemini yapan yardımcı metot
+    private ArtistResponse mapToResponse(ArtistEntity entity) {
+        return ArtistResponse.builder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .country(entity.getCountry())
+                .biography(entity.getBiography())
+                .birthDate(entity.getBirthDate())
+                .createdDate(entity.getCreatedDate())
+                .build();
     }
 }

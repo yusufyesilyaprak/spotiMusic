@@ -1,18 +1,17 @@
 package com.example.spotiMusic.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ArtistRequest {
 
-    @NotBlank(message = "Sanatçı adı boş olamaz")
+    @NotBlank(message = "Artist name cannot be blank.")
     private String name;
 
     private String country;

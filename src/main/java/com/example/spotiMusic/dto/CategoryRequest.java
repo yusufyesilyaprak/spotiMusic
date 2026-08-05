@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryRequest {
 
-    @NotBlank(message = "Kategori adı boş olamaz.")
-    @Size(min = 2, message = "Kategori adı en az 2 karakter olmalıdır.")
+    @NotBlank(message = "Category name cannot be blank.")
+    @Size(min = 2, message = "Category name must be at least 2 characters long.")
     private String name;
 
     private String description;
