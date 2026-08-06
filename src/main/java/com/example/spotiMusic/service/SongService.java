@@ -14,6 +14,7 @@ import com.example.spotiMusic.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +54,42 @@ public class SongService implements ISongService {
         SongEntity entity = songRepository.findById(id)
                 .orElseThrow(() -> new SongNotFoundException("Song not found with id: " + id));
         return mapToResponse(entity);
+    }
+
+    // İsme göre arama
+    public List<SongResponse> searchSongsByName(String name) {
+        // BURASI DÜZELTİLDİ: findByTitle yerine findByName kullanıldı.
+        return songRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // Sanatçıya göre arama
+    public List<SongResponse> getSongsByArtistId(Long artistId) {
+        return songRepository.findByArtistId(artistId).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // Kategoriye göre arama
+    public List<SongResponse> getSongsByCategoryId(Long categoryId) {
+        return songRepository.findByCategoryId(categoryId).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // Aktiflik durumuna göre getirme
+    public List<SongResponse> getSongsByActiveStatus(Boolean active) {
+        return songRepository.findByActive(active).stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    // Tarihe göre filtreleme
+    public List<SongResponse> getSongsReleasedAfter(LocalDate date) {
+        return songRepository.findByReleaseDateAfter(date).stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override

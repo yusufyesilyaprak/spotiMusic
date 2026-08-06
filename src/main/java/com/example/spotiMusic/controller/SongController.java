@@ -6,8 +6,10 @@ import com.example.spotiMusic.service.ISongService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -23,9 +25,36 @@ public class SongController {
         return songService.createSong(request);
     }
 
+    // İsme göre şarkı arama
+    @GetMapping("/search")
+    public ResponseEntity<List<SongResponse>> searchSongs(@RequestParam String name) {
+        return ResponseEntity.ok(songService.searchSongsByName(name));
+    }
+
+    // Aktif şarkıları veya tarihe göre şarkıları getirme (Opsiyonel Parametreler)
     @GetMapping
-    public List<SongResponse> getAllSongs() {
-        return songService.getAllSongs();
+    public ResponseEntity<List<SongResponse>> getSongs(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) LocalDate releaseDate) {
+
+        // 1. Eğer parametreler boşsa tüm listeyi getir
+        if (active == null && releaseDate == null) {
+            return ResponseEntity.ok(songService.getAllSongs());
+        }
+
+        // 2. Sadece aktiflik durumuna göre filtreleme
+        if (active != null && releaseDate == null) {
+            return ResponseEntity.ok(songService.getSongsByActiveStatus(active));
+        }
+
+        // 3. Sadece tarihe göre filtreleme
+        if (releaseDate != null && active == null) {
+            return ResponseEntity.ok(songService.getSongsReleasedAfter(releaseDate));
+        }
+
+        // 4. Her iki parametre de gelirse (İsteğe bağlı, servisinde birleşik bir metot yazılabilir)
+        // Şimdilik sadece aktiflik durumunu baz alalım:
+        return ResponseEntity.ok(songService.getSongsByActiveStatus(active));
     }
 
     @GetMapping("/{id}")

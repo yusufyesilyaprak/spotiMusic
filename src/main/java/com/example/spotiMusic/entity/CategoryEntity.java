@@ -3,6 +3,8 @@ package com.example.spotiMusic.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "categories")
 @Getter
@@ -17,4 +19,9 @@ public class CategoryEntity {
     private Long id;
 
     private String name;
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
 }

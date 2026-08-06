@@ -2,10 +2,13 @@ package com.example.spotiMusic.controller;
 
 import com.example.spotiMusic.dto.ArtistRequest;
 import com.example.spotiMusic.dto.ArtistResponse;
+import com.example.spotiMusic.dto.SongResponse;
 import com.example.spotiMusic.service.IArtistService;
+import com.example.spotiMusic.service.ISongService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +24,12 @@ public class ArtistController {
     @ResponseStatus(HttpStatus.CREATED)
     public ArtistResponse createArtist(@Valid @RequestBody ArtistRequest request) {
         return artistService.createArtist(request);
+    }
+    private final ISongService songService;
+
+    @GetMapping("/{artistId}/songs")
+    public ResponseEntity<List<SongResponse>> getSongsByArtist(@PathVariable Long artistId) {
+        return ResponseEntity.ok(songService.getSongsByArtistId(artistId));
     }
 
     @GetMapping

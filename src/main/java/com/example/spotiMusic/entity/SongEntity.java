@@ -27,7 +27,8 @@ public class SongEntity {
 
     private LocalDate releaseDate;
 
-    private Boolean active;
+    @Column(nullable = false)
+    private Boolean active = true; // Varsayılan olarak aktif başlasın
 
     // Bir şarkının bir sanatçısı vardır. (Many Songs -> One Artist)
     @ManyToOne(fetch = FetchType.LAZY)

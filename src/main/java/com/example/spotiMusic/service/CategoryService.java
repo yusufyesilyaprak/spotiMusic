@@ -9,6 +9,7 @@ import com.example.spotiMusic.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +21,10 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-        if (categoryRepository.existsByName(request.getName())) {
-            throw new CategoryAlreadyExistsException("A category with this name already exists.");
-        }
-
         CategoryEntity entity = CategoryEntity.builder()
                 .name(request.getName())
+                .description(request.getDescription())
+                .createdDate(LocalDateTime.now())
                 .build();
 
         CategoryEntity savedEntity = categoryRepository.save(entity);
@@ -58,7 +57,9 @@ public class CategoryService implements ICategoryService {
     private CategoryResponse mapToResponse(CategoryEntity entity) {
         return CategoryResponse.builder()
                 .id(entity.getId())
-                .name(entity.getName())
+                .name(entity.getName()) 
+                .description(entity.getDescription())
+                .createdDate(entity.getCreatedDate())
                 .build();
     }
 }
