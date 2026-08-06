@@ -23,19 +23,19 @@ public class ArtistController {
         return artistService.createArtist(request);
     }
 
-    @GetMapping("/search")
-    public List<ArtistResponse> searchArtistsByName(@RequestParam String name) {
-        return artistService.searchArtistsByName(name);
+    @GetMapping
+    public List<ArtistResponse> getArtists(@RequestParam(required = false) String name) {
+        // Eğer URL'de "name" parametresi varsa arama servisini çağır
+        if (name != null && !name.trim().isEmpty()) {
+            return artistService.searchArtistsByName(name);
+        }
+
+        return artistService.getAllArtists();
     }
 
     @GetMapping("/{id}")
     public ArtistResponse getArtistById(@PathVariable Long id) {
         return artistService.getArtistById(id);
-    }
-
-    @GetMapping
-    public List<ArtistResponse> getAllArtists() {
-        return artistService.getAllArtists();
     }
 
     @DeleteMapping("/{id}")

@@ -3,6 +3,7 @@ package com.example.spotiMusic.service;
 import com.example.spotiMusic.dto.ArtistRequest;
 import com.example.spotiMusic.dto.ArtistResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
+import com.example.spotiMusic.exception.ArtistAlreadyExistsException;
 import com.example.spotiMusic.exception.ArtistNotFoundException;
 import com.example.spotiMusic.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,9 @@ public class ArtistService implements IArtistService {
 
     @Override
     public ArtistResponse createArtist(ArtistRequest request) {
+        // Sanatçı ismi daha önce eklenmiş mi kontrolü
         if (artistRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("An artist with this name already exists.");
+            throw new ArtistAlreadyExistsException("An artist with this name already exists: " + request.getName());
         }
 
         ArtistEntity entity = ArtistEntity.builder()
@@ -36,13 +38,6 @@ public class ArtistService implements IArtistService {
         return mapToResponse(savedEntity);
     }
 
-    @Override
-    public List<ArtistResponse> searchArtistsByName(String name) {
-        List<ArtistEntity> entities = artistRepository.findByNameContainingIgnoreCase(name);
-        return entities.stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
-    }
 
     @Override
     public ArtistResponse getArtistById(Long id) {
@@ -53,10 +48,28 @@ public class ArtistService implements IArtistService {
 
     @Override
     public List<ArtistResponse> getAllArtists() {
-        List<ArtistEntity> entities = artistRepository.findAll();
-        return entities.stream()
+        return artistRepository.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ArtistResponse updateArtist(Long id, ArtistRequest request) {
+        ArtistEntity existingArtist = artistRepository.findById(id)
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + id));
+
+        // İsim değiştiriliyorsa ve yeni isim zaten başka bir sanatçıda varsa hata fırlat
+        if (!existingArtist.getName().equalsIgnoreCase(request.getName()) && artistRepository.existsByName(request.getName())) {
+            throw new ArtistAlreadyExistsException("An artist with this name already exists: " + request.getName());
+        }
+
+        existingArtist.setName(request.getName());
+        existingArtist.setCountry(request.getCountry());
+        existingArtist.setBiography(request.getBiography());
+        existingArtist.setBirthDate(request.getBirthDate());
+
+        ArtistEntity updatedEntity = artistRepository.save(existingArtist);
+        return mapToResponse(updatedEntity);
     }
 
     @Override
@@ -66,8 +79,13 @@ public class ArtistService implements IArtistService {
         }
         artistRepository.deleteById(id);
     }
+    @Override
+    public List<ArtistResponse> searchArtistsByName(String name) {
+        return artistRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
 
-    // Entity'den Response DTO'ya dönüştürme işlemini yapan yardımcı metot
     private ArtistResponse mapToResponse(ArtistEntity entity) {
         return ArtistResponse.builder()
                 .id(entity.getId())
