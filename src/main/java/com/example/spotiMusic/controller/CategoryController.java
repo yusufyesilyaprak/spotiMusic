@@ -4,6 +4,7 @@ import com.example.spotiMusic.dto.request.CategoryCreateRequest;
 import com.example.spotiMusic.dto.request.CategoryUpdateRequest;
 import com.example.spotiMusic.dto.response.CategoryResponse;
 import com.example.spotiMusic.service.CategoryService;
+import com.example.spotiMusic.service.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryService categoryService;
+    private final ICategoryService categoryService;
 
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryCreateRequest request) {

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class CategoryMapper {
 
-    // CreateRequest nesnesini veritabanı Entity'sine çevirir
+    // Converts the CreateRequest object into a database Entity.
     public static CategoryEntity toEntity(CategoryCreateRequest request) {
         if (request == null) return null;
 
@@ -18,7 +18,7 @@ public class CategoryMapper {
                 .build();
     }
 
-    // Veritabanı Entity'sini kullanıcıya dönülecek Response'a çevirir
+    // Converts the database Entity into the Response to be returned to the user.
     public static CategoryResponse toResponse(CategoryEntity entity) {
         if (entity == null) return null;
 

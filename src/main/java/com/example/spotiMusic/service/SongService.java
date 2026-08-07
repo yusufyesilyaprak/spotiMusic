@@ -11,7 +11,6 @@ import com.example.spotiMusic.repository.CategoryRepository;
 import com.example.spotiMusic.repository.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -148,13 +147,13 @@ public class SongService implements ISongService {
                 .duration(entity.getDuration())
                 .releaseDate(entity.getReleaseDate())
                 .active(entity.getActive())
-                // Artist dönüşümü
+                // Artist transformation
                 .artist(entity.getArtist() != null ?
                         SongResponse.SongArtistResponse.builder()
                                 .id(entity.getArtist().getId())
                                 .name(entity.getArtist().getName())
                                 .build() : null)
-                // Kategori dönüşümü
+                // Category transformation
                 .category(entity.getCategory() != null ?
                         SongResponse.SongCategoryResponse.builder()
                                 .id(entity.getCategory().getId())

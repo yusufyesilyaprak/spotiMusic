@@ -22,7 +22,7 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryResponse createCategory(CategoryCreateRequest request) {
-        // İsim kontrolü: Aynı isimde kategori var mı?
+        //Name check: Is there a category with the same name?
         if (categoryRepository.existsByName(request.getName())) {
             throw new RuntimeException("Category with this name already exists: " + request.getName());
         }
@@ -51,7 +51,7 @@ public class CategoryService implements ICategoryService {
         CategoryEntity existingEntity = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
 
-        // İsim kontrolü: Eğer isim değiştiriliyorsa ve yeni isim başkası tarafından kullanılıyorsa hata fırlat
+        // Name check: If the name is changed and the new name is already in use by somewhere else, an error will be thrown.
         if (!existingEntity.getName().equals(request.getName()) && categoryRepository.existsByName(request.getName())) {
             throw new RuntimeException("Category with this name already exists: " + request.getName());
         }

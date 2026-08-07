@@ -28,7 +28,7 @@ public class SongEntity {
     private LocalDate releaseDate;
 
     @Column(nullable = false)
-    private Boolean active = true; // Varsayılan olarak aktif başlasın
+    private Boolean active = true; // Start active by default
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)

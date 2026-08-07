@@ -3,7 +3,7 @@ package com.example.spotiMusic.controller;
 import com.example.spotiMusic.dto.request.ArtistCreateRequest;
 import com.example.spotiMusic.dto.request.ArtistUpdateRequest;
 import com.example.spotiMusic.dto.response.ArtistResponse;
-import com.example.spotiMusic.service.ArtistService;
+import com.example.spotiMusic.service.IArtistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,11 +17,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArtistController {
 
-    private final ArtistService artistService;
+    private final IArtistService artistService;
 
     @PostMapping
     public ResponseEntity<ArtistResponse> createArtist(@Valid @RequestBody ArtistCreateRequest request) {
         return new ResponseEntity<>(artistService.createArtist(request), HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/search")
+    public ResponseEntity<List<ArtistResponse>> searchArtists(@RequestParam String name) {
+        return ResponseEntity.ok(artistService.searchArtistsByName(name));
     }
 
     @GetMapping

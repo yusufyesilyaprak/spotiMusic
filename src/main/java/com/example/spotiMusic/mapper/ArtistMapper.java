@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class ArtistMapper {
 
-    // CreateRequest nesnesini veritabanı Entity'sine çevirir
+    // Converts the CreateRequest object into a database Entity.
     public static ArtistEntity toEntity(ArtistCreateRequest request) {
         if (request == null) return null;
 
@@ -20,7 +20,7 @@ public class ArtistMapper {
                 .build();
     }
 
-    // Veritabanı Entity'sini kullanıcıya dönülecek Response'a çevirir
+    // Converts the database Entity into the Response to be returned to the user.
     public static ArtistResponse toResponse(ArtistEntity entity) {
         if (entity == null) return null;
 

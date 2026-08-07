@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 public class SongMapper {
 
-    // Request'ten gelen verilerle birlikte, Service katmanında DB'den çektiğimiz ilişkili nesneleri de alıyoruz
     public static SongEntity toEntity(SongCreateRequest request, ArtistEntity artist, CategoryEntity category) {
         if (request == null) return null;
 
@@ -17,9 +16,9 @@ public class SongMapper {
                 .name(request.getName())
                 .duration(request.getDuration())
                 .releaseDate(request.getReleaseDate())
-                .active(request.getActive() != null ? request.getActive() : true) // Null ise varsayılan true
-                .artist(artist)     // Dışarıdan parametre olarak gelen Entity
-                .category(category) // Dışarıdan parametre olarak gelen Entity
+                .active(request.getActive() != null ? request.getActive() : true) // Defaults to true if null.
+                .artist(artist)     // Entity that comes as an external parameter
+                .category(category) // Entity that comes as an external parameter
                 .createdDate(LocalDateTime.now())
                 .build();
     }
@@ -34,14 +33,14 @@ public class SongMapper {
                 .releaseDate(entity.getReleaseDate())
                 .active(entity.getActive())
 
-                // Artist dönüşümü
+                // Artist transformation
                 .artist(entity.getArtist() != null ?
                         SongResponse.SongArtistResponse.builder()
                                 .id(entity.getArtist().getId())
                                 .name(entity.getArtist().getName())
                                 .build() : null)
 
-                // Category dönüşümü
+                // Category transformation
                 .category(entity.getCategory() != null ?
                         SongResponse.SongCategoryResponse.builder()
                                 .id(entity.getCategory().getId())
