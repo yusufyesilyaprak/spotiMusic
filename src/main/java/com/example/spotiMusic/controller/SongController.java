@@ -1,7 +1,8 @@
 package com.example.spotiMusic.controller;
 
-import com.example.spotiMusic.dto.SongRequest;
-import com.example.spotiMusic.dto.SongResponse;
+import com.example.spotiMusic.dto.request.SongCreateRequest;
+import com.example.spotiMusic.dto.request.SongUpdateRequest;
+import com.example.spotiMusic.dto.response.SongResponse;
 import com.example.spotiMusic.service.ISongService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class SongController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public SongResponse createSong(@Valid @RequestBody SongRequest request) {
+    public SongResponse createSong(@Valid @RequestBody SongCreateRequest request) {
         return songService.createSong(request);
     }
 
@@ -37,24 +38,23 @@ public class SongController {
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) LocalDate releaseDate) {
 
-        // 1. Eğer parametreler boşsa tüm listeyi getir
-        if (active == null && releaseDate == null) {
-            return ResponseEntity.ok(songService.getAllSongs());
+        // 4. Her iki parametre de gelirse (Artık birleşik metodu çağırıyoruz)
+        if (active != null && releaseDate != null) {
+            return ResponseEntity.ok(songService.getSongsByActiveStatusAndReleaseDate(active, releaseDate));
         }
 
         // 2. Sadece aktiflik durumuna göre filtreleme
-        if (active != null && releaseDate == null) {
+        if (active != null) {
             return ResponseEntity.ok(songService.getSongsByActiveStatus(active));
         }
 
         // 3. Sadece tarihe göre filtreleme
-        if (releaseDate != null && active == null) {
+        if (releaseDate != null) {
             return ResponseEntity.ok(songService.getSongsReleasedAfter(releaseDate));
         }
 
-        // 4. Her iki parametre de gelirse (İsteğe bağlı, servisinde birleşik bir metot yazılabilir)
-        // Şimdilik sadece aktiflik durumunu baz alalım:
-        return ResponseEntity.ok(songService.getSongsByActiveStatus(active));
+        // 1. Eğer parametreler boşsa tüm listeyi getir (En sona bıraktık)
+        return ResponseEntity.ok(songService.getAllSongs());
     }
 
     @GetMapping("/{id}")
@@ -63,7 +63,7 @@ public class SongController {
     }
 
     @PutMapping("/{id}")
-    public SongResponse updateSong(@PathVariable Long id, @Valid @RequestBody SongRequest request) {
+    public SongResponse updateSong(@PathVariable Long id, @Valid @RequestBody SongUpdateRequest request) {
         return songService.updateSong(id, request);
     }
 

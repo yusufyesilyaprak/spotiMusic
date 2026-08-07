@@ -30,12 +30,10 @@ public class SongEntity {
     @Column(nullable = false)
     private Boolean active = true; // Varsayılan olarak aktif başlasın
 
-    // Bir şarkının bir sanatçısı vardır. (Many Songs -> One Artist)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artist_id", nullable = false)
     private ArtistEntity artist;
 
-    // Bir şarkının bir kategorisi vardır. (Many Songs -> One Category)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;

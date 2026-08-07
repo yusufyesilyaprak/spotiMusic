@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
                 "Unexpected Error: " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
     }
 
-    // Özel hata mesajı şablonu oluşturucu (Kod tekrarını önler)
+    // Özel hata mesajı şablonu oluşturucu
     private Map<String, Object> createErrorResponse(HttpStatus status, String message) {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());

@@ -1,10 +1,9 @@
 package com.example.spotiMusic.controller;
 
-import com.example.spotiMusic.dto.ArtistRequest;
-import com.example.spotiMusic.dto.ArtistResponse;
-import com.example.spotiMusic.dto.SongResponse;
-import com.example.spotiMusic.service.IArtistService;
-import com.example.spotiMusic.service.ISongService;
+import com.example.spotiMusic.dto.request.ArtistCreateRequest;
+import com.example.spotiMusic.dto.request.ArtistUpdateRequest;
+import com.example.spotiMusic.dto.response.ArtistResponse;
+import com.example.spotiMusic.service.ArtistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,38 +17,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ArtistController {
 
-    private final IArtistService artistService;
+    private final ArtistService artistService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ArtistResponse createArtist(@Valid @RequestBody ArtistRequest request) {
-        return artistService.createArtist(request);
-    }
-    private final ISongService songService;
-
-    @GetMapping("/{artistId}/songs")
-    public ResponseEntity<List<SongResponse>> getSongsByArtist(@PathVariable Long artistId) {
-        return ResponseEntity.ok(songService.getSongsByArtistId(artistId));
+    public ResponseEntity<ArtistResponse> createArtist(@Valid @RequestBody ArtistCreateRequest request) {
+        return new ResponseEntity<>(artistService.createArtist(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<ArtistResponse> getArtists(@RequestParam(required = false) String name) {
-        // Eğer URL'de "name" parametresi varsa arama servisini çağır
-        if (name != null && !name.trim().isEmpty()) {
-            return artistService.searchArtistsByName(name);
-        }
-
-        return artistService.getAllArtists();
+    public ResponseEntity<List<ArtistResponse>> getAllArtists() {
+        return ResponseEntity.ok(artistService.getAllArtists());
     }
 
     @GetMapping("/{id}")
-    public ArtistResponse getArtistById(@PathVariable Long id) {
-        return artistService.getArtistById(id);
+    public ResponseEntity<ArtistResponse> getArtistById(@PathVariable Long id) {
+        return ResponseEntity.ok(artistService.getArtistById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ArtistResponse> updateArtist(
+            @PathVariable Long id,
+            @Valid @RequestBody ArtistUpdateRequest request) {
+        return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteArtist(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteArtist(@PathVariable Long id) {
         artistService.deleteArtist(id);
+        return ResponseEntity.noContent().build();
     }
 }

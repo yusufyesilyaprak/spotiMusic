@@ -1,10 +1,9 @@
 package com.example.spotiMusic.controller;
 
-import com.example.spotiMusic.dto.CategoryRequest;
-import com.example.spotiMusic.dto.CategoryResponse;
-import com.example.spotiMusic.dto.SongResponse;
-import com.example.spotiMusic.service.ICategoryService;
-import com.example.spotiMusic.service.ISongService;
+import com.example.spotiMusic.dto.request.CategoryCreateRequest;
+import com.example.spotiMusic.dto.request.CategoryUpdateRequest;
+import com.example.spotiMusic.dto.response.CategoryResponse;
+import com.example.spotiMusic.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,32 +17,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final ICategoryService categoryService;
+    private final CategoryService categoryService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CategoryResponse createCategory(@Valid @RequestBody CategoryRequest request) {
-        return categoryService.createCategory(request);
-    }
-    private final ISongService songService;
-    @GetMapping("/{categoryId}/songs")
-    public ResponseEntity<List<SongResponse>> getSongsByCategory(@PathVariable Long categoryId) {
-        return ResponseEntity.ok(songService.getSongsByCategoryId(categoryId));
-    }
-
-    @GetMapping("/{id}")
-    public CategoryResponse getCategoryById(@PathVariable Long id) {
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
+        return new ResponseEntity<>(categoryService.createCategory(request), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public List<CategoryResponse> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryResponse> updateCategory(
+            @PathVariable Long id,
+            @Valid @RequestBody CategoryUpdateRequest request) {
+        return ResponseEntity.ok(categoryService.updateCategory(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }

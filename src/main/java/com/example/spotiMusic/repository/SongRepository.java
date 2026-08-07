@@ -10,7 +10,6 @@ import java.util.List;
 @Repository
 public interface SongRepository extends JpaRepository<SongEntity, Long> {
 
-    // "title" yerine "name" kullanıyoruz
     List<SongEntity> findByNameContainingIgnoreCase(String name);
 
     List<SongEntity> findByArtistId(Long artistId);
@@ -20,4 +19,6 @@ public interface SongRepository extends JpaRepository<SongEntity, Long> {
     List<SongEntity> findByActive(Boolean active);
 
     List<SongEntity> findByReleaseDateAfter(LocalDate releaseDate);
+
+    List<SongEntity> findByActiveAndReleaseDateAfter(Boolean active, LocalDate releaseDate);
 }
