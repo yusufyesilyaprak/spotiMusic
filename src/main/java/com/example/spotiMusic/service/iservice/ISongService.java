@@ -1,4 +1,4 @@
-package com.example.spotiMusic.service;
+package com.example.spotiMusic.service.iservice;
 
 import com.example.spotiMusic.dto.request.SongCreateRequest;
 import com.example.spotiMusic.dto.request.SongUpdateRequest;

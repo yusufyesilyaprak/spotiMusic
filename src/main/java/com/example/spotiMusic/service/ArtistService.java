@@ -4,6 +4,7 @@ import com.example.spotiMusic.dto.request.ArtistCreateRequest;
 import com.example.spotiMusic.dto.request.ArtistUpdateRequest;
 import com.example.spotiMusic.dto.response.ArtistResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
+import com.example.spotiMusic.service.iservice.IArtistService;
 import com.example.spotiMusic.mapper.ArtistMapper;
 import com.example.spotiMusic.repository.ArtistRepository;
 import lombok.RequiredArgsConstructor;

@@ -3,7 +3,7 @@ package com.example.spotiMusic.controller;
 import com.example.spotiMusic.dto.request.SongCreateRequest;
 import com.example.spotiMusic.dto.request.SongUpdateRequest;
 import com.example.spotiMusic.dto.response.SongResponse;
-import com.example.spotiMusic.service.ISongService;
+import com.example.spotiMusic.service.iservice.ISongService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

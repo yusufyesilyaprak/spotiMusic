@@ -1,4 +1,4 @@
-package com.example.spotiMusic.service;
+package com.example.spotiMusic.service.iservice;
 
 import com.example.spotiMusic.dto.request.CategoryCreateRequest;
 import com.example.spotiMusic.dto.request.CategoryUpdateRequest; // Update request importu eklendi

@@ -6,6 +6,7 @@ import com.example.spotiMusic.dto.response.SongResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
 import com.example.spotiMusic.entity.CategoryEntity;
 import com.example.spotiMusic.entity.SongEntity;
+import com.example.spotiMusic.service.iservice.ISongService;
 import com.example.spotiMusic.repository.ArtistRepository;
 import com.example.spotiMusic.repository.CategoryRepository;
 import com.example.spotiMusic.repository.SongRepository;
