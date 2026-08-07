@@ -21,9 +21,8 @@ public class SongController {
     private final ISongService songService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public SongResponse createSong(@Valid @RequestBody SongCreateRequest request) {
-        return songService.createSong(request);
+    public ResponseEntity<SongResponse> createSong(@Valid @RequestBody SongCreateRequest request) {
+        return new ResponseEntity<>(songService.createSong(request), HttpStatus.CREATED);
     }
 
     // İsme göre şarkı arama
@@ -63,8 +62,10 @@ public class SongController {
     }
 
     @PutMapping("/{id}")
-    public SongResponse updateSong(@PathVariable Long id, @Valid @RequestBody SongUpdateRequest request) {
-        return songService.updateSong(id, request);
+    public ResponseEntity<SongResponse> updateSong(
+            @PathVariable Long id,
+            @Valid @RequestBody SongUpdateRequest request) {
+        return ResponseEntity.ok(songService.updateSong(id, request));
     }
 
     @DeleteMapping("/{id}")
