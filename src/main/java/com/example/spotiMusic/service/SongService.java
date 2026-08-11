@@ -6,6 +6,7 @@ import com.example.spotiMusic.dto.response.SongResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
 import com.example.spotiMusic.entity.CategoryEntity;
 import com.example.spotiMusic.entity.SongEntity;
+import com.example.spotiMusic.exception.SongNotFoundException;
 import com.example.spotiMusic.service.iservice.ISongService;
 import com.example.spotiMusic.repository.ArtistRepository;
 import com.example.spotiMusic.repository.CategoryRepository;
@@ -26,7 +27,7 @@ public class SongService implements ISongService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public SongResponse createSong(SongCreateRequest request) { // HATA BURADAYDI: SongRequest yerine SongCreateRequest yazıldı
+    public SongResponse createSong(SongCreateRequest request) {
 
         ArtistEntity artist = artistRepository.findById(request.getArtistId())
                 .orElseThrow(() -> new RuntimeException("Artist not found with id: " + request.getArtistId()));
@@ -51,7 +52,7 @@ public class SongService implements ISongService {
     @Override
     public SongResponse getSongById(Long id) {
         SongEntity entity = songRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Song not found with id: " + id));
+                .orElseThrow(() -> new SongNotFoundException("Song not found with id: " + id));
         return mapToResponse(entity);
     }
 
