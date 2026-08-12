@@ -1,6 +1,8 @@
 package com.example.spotiMusic.controller;
 
+import com.example.spotiMusic.dto.request.LoginRequest;
 import com.example.spotiMusic.dto.request.RegisterRequest;
+import com.example.spotiMusic.dto.response.LoginResponse;
 import com.example.spotiMusic.dto.response.RegisterResponse;
 import com.example.spotiMusic.service.iservice.IAuthService;
 import jakarta.validation.Valid;
@@ -22,5 +24,10 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
         return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 }

@@ -104,6 +104,12 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
     }
+    // 9. NEW: Unauthorized (401) Exceptions for Login
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
+        return createErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
 
     // Custom error message template builder
     private Map<String, Object> createErrorResponse(HttpStatus status, String message, String path) {
