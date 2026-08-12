@@ -19,7 +19,7 @@ public class ArtistController {
 
     private final IArtistService artistService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ArtistResponse> createArtist(@Valid @RequestBody ArtistCreateRequest request) {
         return new ResponseEntity<>(artistService.createArtist(request), HttpStatus.CREATED);
     }
@@ -29,24 +29,24 @@ public class ArtistController {
         return ResponseEntity.ok(artistService.searchArtistsByName(name));
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<ArtistResponse>> getAllArtists() {
         return ResponseEntity.ok(artistService.getAllArtists());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<ArtistResponse> getArtistById(@PathVariable Long id) {
         return ResponseEntity.ok(artistService.getArtistById(id));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<ArtistResponse> updateArtist(
             @PathVariable Long id,
             @Valid @RequestBody ArtistUpdateRequest request) {
         return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteArtist(@PathVariable Long id) {
         artistService.deleteArtist(id);
         return ResponseEntity.noContent().build();
