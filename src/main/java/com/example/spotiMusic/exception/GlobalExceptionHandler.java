@@ -34,7 +34,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CategoryAlreadyExistsException.class,
             ArtistAlreadyExistsException.class,
-            IllegalArgumentException.class
+            IllegalArgumentException.class,
+            EmailAlreadyExistsException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleConflictExceptions(RuntimeException ex, HttpServletRequest request) {
@@ -96,7 +97,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> handleAllOtherExceptions(Exception ex, HttpServletRequest request) {
-        ex.printStackTrace(); // Keep this for your IDE console debugging
+        ex.printStackTrace();
         return createErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "An unexpected server error occurred: " + ex.getMessage(), // Simplified the message slightly for security
