@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class CategoryMapper {
 
-    // Converts the CreateRequest object into a database Entity.
+
     public static CategoryEntity toEntity(CategoryCreateRequest request) {
         if (request == null) return null;
 
@@ -18,7 +18,7 @@ public class CategoryMapper {
                 .build();
     }
 
-    // Converts the database Entity into the Response to be returned to the user.
+
     public static CategoryResponse toResponse(CategoryEntity entity) {
         if (entity == null) return null;
 

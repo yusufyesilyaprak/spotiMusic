@@ -6,6 +6,8 @@ import com.example.spotiMusic.dto.response.SongResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
 import com.example.spotiMusic.entity.CategoryEntity;
 import com.example.spotiMusic.entity.SongEntity;
+import com.example.spotiMusic.exception.ArtistNotFoundException;
+import com.example.spotiMusic.exception.CategoryNotFoundException;
 import com.example.spotiMusic.exception.SongNotFoundException;
 import com.example.spotiMusic.service.iservice.ISongService;
 import com.example.spotiMusic.repository.ArtistRepository;
@@ -30,10 +32,10 @@ public class SongService implements ISongService {
     public SongResponse createSong(SongCreateRequest request) {
 
         ArtistEntity artist = artistRepository.findById(request.getArtistId())
-                .orElseThrow(() -> new RuntimeException("Artist not found with id: " + request.getArtistId()));
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + request.getArtistId()));
 
         CategoryEntity category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + request.getCategoryId()));
 
         SongEntity entity = SongEntity.builder()
                 .name(request.getName())
@@ -67,13 +69,13 @@ public class SongService implements ISongService {
     @Override
     public SongResponse updateSong(Long id, SongUpdateRequest request) {
         SongEntity existingEntity = songRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Song not found with id: " + id));
+                .orElseThrow(() -> new SongNotFoundException("Song not found with id: " + id));
 
         ArtistEntity artist = artistRepository.findById(request.getArtistId())
-                .orElseThrow(() -> new RuntimeException("Artist not found with id: " + request.getArtistId()));
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + request.getArtistId()));
 
         CategoryEntity category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + request.getCategoryId()));
 
         existingEntity.setName(request.getName());
         existingEntity.setDuration(request.getDuration());
@@ -89,7 +91,7 @@ public class SongService implements ISongService {
     @Override
     public void deleteSong(Long id) {
         if (!songRepository.existsById(id)) {
-            throw new RuntimeException("Song not found with id: " + id);
+            throw new SongNotFoundException("Song not found with id: " + id);
         }
         songRepository.deleteById(id);
     }

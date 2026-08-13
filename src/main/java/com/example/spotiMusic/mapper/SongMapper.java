@@ -16,9 +16,9 @@ public class SongMapper {
                 .name(request.getName())
                 .duration(request.getDuration())
                 .releaseDate(request.getReleaseDate())
-                .active(request.getActive() != null ? request.getActive() : true) // Defaults to true if null.
-                .artist(artist)     // Entity that comes as an external parameter
-                .category(category) // Entity that comes as an external parameter
+                .active(request.getActive() != null ? request.getActive() : true)
+                .artist(artist)
+                .category(category)
                 .createdDate(LocalDateTime.now())
                 .build();
     }
@@ -33,14 +33,14 @@ public class SongMapper {
                 .releaseDate(entity.getReleaseDate())
                 .active(entity.getActive())
 
-                // Artist transformation
+
                 .artist(entity.getArtist() != null ?
                         SongResponse.SongArtistResponse.builder()
                                 .id(entity.getArtist().getId())
                                 .name(entity.getArtist().getName())
                                 .build() : null)
 
-                // Category transformation
+
                 .category(entity.getCategory() != null ?
                         SongResponse.SongCategoryResponse.builder()
                                 .id(entity.getCategory().getId())

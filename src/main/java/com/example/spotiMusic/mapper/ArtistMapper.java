@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class ArtistMapper {
 
-    // Converts the CreateRequest object into a database Entity.
+
     public static ArtistEntity toEntity(ArtistCreateRequest request) {
         if (request == null) return null;
 
@@ -20,7 +20,7 @@ public class ArtistMapper {
                 .build();
     }
 
-    // Converts the database Entity into the Response to be returned to the user.
+
     public static ArtistResponse toResponse(ArtistEntity entity) {
         if (entity == null) return null;
 

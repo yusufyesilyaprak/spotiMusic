@@ -4,6 +4,8 @@ import com.example.spotiMusic.dto.request.CategoryCreateRequest;
 import com.example.spotiMusic.dto.request.CategoryUpdateRequest;
 import com.example.spotiMusic.dto.response.CategoryResponse;
 import com.example.spotiMusic.entity.CategoryEntity;
+import com.example.spotiMusic.exception.CategoryAlreadyExistsException;
+import com.example.spotiMusic.exception.CategoryNotFoundException;
 import com.example.spotiMusic.service.iservice.ICategoryService;
 import com.example.spotiMusic.mapper.CategoryMapper;
 import com.example.spotiMusic.repository.CategoryRepository;
@@ -25,7 +27,7 @@ public class CategoryService implements ICategoryService {
     public CategoryResponse createCategory(CategoryCreateRequest request) {
         //Name check: Is there a category with the same name?
         if (categoryRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Category with this name already exists: " + request.getName());
+            throw new CategoryAlreadyExistsException("Category with this name already exists: " + request.getName());
         }
 
         CategoryEntity entity = CategoryMapper.toEntity(request);
@@ -36,7 +38,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public CategoryResponse getCategoryById(Long id) {
         CategoryEntity entity = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
         return CategoryMapper.toResponse(entity);
     }
 
@@ -50,11 +52,11 @@ public class CategoryService implements ICategoryService {
     @Override
     public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request) {
         CategoryEntity existingEntity = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
 
         // Name check: If the name is changed and the new name is already in use by somewhere else, an error will be thrown.
         if (!existingEntity.getName().equals(request.getName()) && categoryRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Category with this name already exists: " + request.getName());
+            throw new CategoryAlreadyExistsException("Category with this name already exists: " + request.getName());
         }
 
         existingEntity.setName(request.getName());
@@ -67,7 +69,7 @@ public class CategoryService implements ICategoryService {
     @Override
     public void deleteCategory(Long id) {
         if (!categoryRepository.existsById(id)) {
-            throw new RuntimeException("Category not found with id: " + id);
+            throw new CategoryNotFoundException("Category not found with id: " + id);
         }
         categoryRepository.deleteById(id);
     }

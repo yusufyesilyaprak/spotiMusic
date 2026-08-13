@@ -4,6 +4,8 @@ import com.example.spotiMusic.dto.request.ArtistCreateRequest;
 import com.example.spotiMusic.dto.request.ArtistUpdateRequest;
 import com.example.spotiMusic.dto.response.ArtistResponse;
 import com.example.spotiMusic.entity.ArtistEntity;
+import com.example.spotiMusic.exception.ArtistAlreadyExistsException;
+import com.example.spotiMusic.exception.ArtistNotFoundException;
 import com.example.spotiMusic.service.iservice.IArtistService;
 import com.example.spotiMusic.mapper.ArtistMapper;
 import com.example.spotiMusic.repository.ArtistRepository;
@@ -23,7 +25,7 @@ public class ArtistService implements IArtistService {
     public ArtistResponse createArtist(ArtistCreateRequest request) {
         // 1. Name check
         if (artistRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Artist with this name already exists: " + request.getName());
+            throw new ArtistAlreadyExistsException("Artist with this name already exists: " + request.getName());
         }
 
         //Convert Request to Entity using Mapper.
@@ -39,7 +41,7 @@ public class ArtistService implements IArtistService {
     // READ (By Id)
     public ArtistResponse getArtistById(Long id) {
         ArtistEntity entity = artistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artist not found with id: " + id));
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + id));
 
         return ArtistMapper.toResponse(entity);
     }
@@ -55,11 +57,11 @@ public class ArtistService implements IArtistService {
     public ArtistResponse updateArtist(Long id, ArtistUpdateRequest request) {
         // 1. Find the artist to update.
         ArtistEntity existingEntity = artistRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artist not found with id: " + id));
+                .orElseThrow(() -> new ArtistNotFoundException("Artist not found with id: " + id));
 
         // 2. Name check: Throw an error if the name is being changed and the new name is already in use by someone else.
         if (!existingEntity.getName().equals(request.getName()) && artistRepository.existsByName(request.getName())) {
-            throw new RuntimeException("Artist with this name already exists: " + request.getName());
+            throw new ArtistAlreadyExistsException("Artist with this name already exists: " + request.getName());
         }
 
         // 3. Update fields
@@ -74,7 +76,7 @@ public class ArtistService implements IArtistService {
     // DELETE
     public void deleteArtist(Long id) {
         if (!artistRepository.existsById(id)) {
-            throw new RuntimeException("Artist not found with id: " + id);
+            throw new ArtistNotFoundException("Artist not found with id: " + id);
         }
         artistRepository.deleteById(id);
     }

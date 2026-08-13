@@ -9,6 +9,7 @@ import com.example.spotiMusic.enums.Role;
 import com.example.spotiMusic.exception.EmailAlreadyExistsException;
 import com.example.spotiMusic.exception.InvalidCredentialsException;
 import com.example.spotiMusic.repository.UserRepository;
+import com.example.spotiMusic.security.JwtService;
 import com.example.spotiMusic.service.iservice.IAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,24 +21,29 @@ public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
+        // 1. Check if email is already in use
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EmailAlreadyExistsException("This email address is already in use.");
         }
 
+        // 2. Create entity and set default values
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Role.USER) // Default role
                 .active(true)
                 .build();
 
+        // 3. Save to database
         User savedUser = userRepository.save(user);
 
+        // 4. Convert to Response DTO
         return RegisterResponse.builder()
                 .id(savedUser.getId())
                 .firstName(savedUser.getFirstName())
@@ -49,17 +55,22 @@ public class AuthService implements IAuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
+        // 1. Find user by email, throw 401 if not found
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
 
+        // 2. Verify password with PasswordEncoder, throw 401 if incorrect
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
+        // 3. Generate JWT if credentials are correct
+        String jwtToken = jwtService.generateToken(user.getEmail());
+
+        // 4. Return response in the required format
         return LoginResponse.builder()
-                .message("Login successful")
-                .userId(user.getId())
-                .email(user.getEmail())
+                .accessToken(jwtToken)
+                .tokenType("Bearer")
                 .build();
     }
 }
