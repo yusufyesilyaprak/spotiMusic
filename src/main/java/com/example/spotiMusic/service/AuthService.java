@@ -4,7 +4,7 @@ import com.example.spotiMusic.dto.request.LoginRequest;
 import com.example.spotiMusic.dto.request.RegisterRequest;
 import com.example.spotiMusic.dto.response.LoginResponse;
 import com.example.spotiMusic.dto.response.RegisterResponse;
-import com.example.spotiMusic.entity.User;
+import com.example.spotiMusic.entity.UserEntity;
 import com.example.spotiMusic.enums.Role;
 import com.example.spotiMusic.exception.EmailAlreadyExistsException;
 import com.example.spotiMusic.exception.InvalidCredentialsException;
@@ -31,7 +31,7 @@ public class AuthService implements IAuthService {
         }
 
         // 2. Create entity and set default values
-        User user = User.builder()
+        UserEntity userEntity = UserEntity.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
@@ -41,31 +41,31 @@ public class AuthService implements IAuthService {
                 .build();
 
         // 3. Save to database
-        User savedUser = userRepository.save(user);
+        UserEntity savedUserEntity = userRepository.save(userEntity);
 
         // 4. Convert to Response DTO
         return RegisterResponse.builder()
-                .id(savedUser.getId())
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .email(savedUser.getEmail())
-                .role(savedUser.getRole())
+                .id(savedUserEntity.getId())
+                .firstName(savedUserEntity.getFirstName())
+                .lastName(savedUserEntity.getLastName())
+                .email(savedUserEntity.getEmail())
+                .role(savedUserEntity.getRole())
                 .build();
     }
 
     @Override
     public LoginResponse login(LoginRequest request) {
         // 1. Find user by email, throw 401 if not found
-        User user = userRepository.findByEmail(request.getEmail())
+        UserEntity userEntity = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password."));
 
         // 2. Verify password with PasswordEncoder, throw 401 if incorrect
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {
             throw new InvalidCredentialsException("Invalid email or password.");
         }
 
         // 3. Generate JWT if credentials are correct
-        String jwtToken = jwtService.generateToken(user.getEmail());
+        String jwtToken = jwtService.generateToken(userEntity.getEmail());
 
         // 4. Return response in the required format
         return LoginResponse.builder()

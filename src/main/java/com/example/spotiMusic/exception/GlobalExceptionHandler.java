@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -23,7 +24,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             ArtistNotFoundException.class,
             CategoryNotFoundException.class,
-            SongNotFoundException.class
+            SongNotFoundException.class,
+            PlaylistNotFoundException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleNotFoundExceptions(RuntimeException ex, HttpServletRequest request) {
@@ -60,7 +62,7 @@ public class GlobalExceptionHandler {
         return response;
     }
 
-    // 4. NEW: Malformed JSON or Invalid Data Format (e.g., Wrong Date Format) (400)
+    // 4.Malformed JSON or Invalid Data Format (e.g., Wrong Date Format) (400)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
@@ -68,7 +70,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 
-    // 5. NEW: Type Mismatch (e.g., Entering a string instead of a Long ID in the URL) (400)
+    // 5.Type Mismatch (e.g., Entering a string instead of a Long ID in the URL) (400)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
@@ -77,7 +79,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 
-    // 6. NEW: Missing Request Parameters (e.g., Forgot to send '?name=' in search endpoint) (400)
+    // 6.Missing Request Parameters (e.g., Forgot to send '?name=' in search endpoint) (400)
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleMissingParams(MissingServletRequestParameterException ex, HttpServletRequest request) {
@@ -85,7 +87,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(HttpStatus.BAD_REQUEST, message, request.getRequestURI());
     }
 
-    // 7. NEW: Http Method Not Supported (e.g., Sending POST to a GET endpoint) (405)
+    // 7.Http Method Not Supported (e.g., Sending POST to a GET endpoint) (405)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public Map<String, Object> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
@@ -109,6 +111,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Map<String, Object> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
         return createErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
+    }
+    // 10. Handle Access Denied Exceptions (403 Forbidden)
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, Object> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        return createErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request.getRequestURI());
     }
 
     // Custom error message template builder
