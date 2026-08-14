@@ -95,11 +95,14 @@ public class PlaylistService implements IPlaylistService {
     }
 
     private PlaylistResponse mapToResponse(PlaylistEntity playlist) {
+
+        int count = (playlist.getSongs() != null) ? playlist.getSongs().size() : 0;
+
         return PlaylistResponse.builder()
                 .id(playlist.getId())
                 .name(playlist.getName())
-                .userId(playlist.getUser().getId())
-                .userFullName(playlist.getUser().getFirstName() + " " + playlist.getUser().getLastName())
+                .description(playlist.getDescription())
+                .songCount(count)
                 .build();
     }
     @Override

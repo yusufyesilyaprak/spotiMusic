@@ -8,6 +8,6 @@ import lombok.Data;
 public class PlaylistResponse {
     private Long id;
     private String name;
-    private Long userId;
-    private String userFullName;
+    private String description;
+    private Integer songCount;
 }
