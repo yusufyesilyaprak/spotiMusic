@@ -22,25 +22,28 @@ public class GlobalExceptionHandler {
 
     // 1. Not Found (404) Exceptions
     @ExceptionHandler({
+            SongNotFoundException.class,
             ArtistNotFoundException.class,
             CategoryNotFoundException.class,
-            SongNotFoundException.class,
-            PlaylistNotFoundException.class
+            PlaylistNotFoundException.class,
+            SongNotInPlaylistException.class
     })
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleNotFoundExceptions(RuntimeException ex, HttpServletRequest request) {
+    public Map<String, Object> handleResourceNotFoundExceptions(RuntimeException ex, HttpServletRequest request) {
         return createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
+
 
     // 2. Conflict (409) Exceptions (e.g., category or artist name conflicts)
     @ExceptionHandler({
             CategoryAlreadyExistsException.class,
             ArtistAlreadyExistsException.class,
             IllegalArgumentException.class,
-            EmailAlreadyExistsException.class
+            EmailAlreadyExistsException.class,
+            SongAlreadyInPlaylistException.class
     })
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, Object> handleConflictExceptions(RuntimeException ex, HttpServletRequest request) {
+    public Map<String, Object> handleSongAlreadyInPlaylistException(SongAlreadyInPlaylistException ex, HttpServletRequest request) {
         return createErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
     }
 

@@ -7,7 +7,9 @@ import com.example.spotiMusic.entity.PlaylistEntity;
 import com.example.spotiMusic.entity.SongEntity;
 import com.example.spotiMusic.entity.UserEntity;
 import com.example.spotiMusic.exception.PlaylistNotFoundException;
+import com.example.spotiMusic.exception.SongAlreadyInPlaylistException;
 import com.example.spotiMusic.exception.SongNotFoundException;
+import com.example.spotiMusic.exception.SongNotInPlaylistException;
 import com.example.spotiMusic.repository.PlaylistRepository;
 import com.example.spotiMusic.repository.SongRepository;
 import com.example.spotiMusic.repository.UserRepository;
@@ -49,10 +51,13 @@ public class PlaylistService implements IPlaylistService {
         SongEntity song = songRepository.findById(songId)
                 .orElseThrow(() -> new SongNotFoundException("Song not found with id: " + songId));
 
-        if (!playlist.getSongs().contains(song)) {
-            playlist.getSongs().add(song);
-            playlistRepository.save(playlist);
+        // Validation: Is the song already in the playlist? (Throws 409)
+        if (playlist.getSongs().contains(song)) {
+            throw new SongAlreadyInPlaylistException("Song is already in the playlist.");
         }
+
+        playlist.getSongs().add(song);
+        playlistRepository.save(playlist);
     }
 
     @Override
@@ -61,10 +66,13 @@ public class PlaylistService implements IPlaylistService {
         SongEntity song = songRepository.findById(songId)
                 .orElseThrow(() -> new SongNotFoundException("Song not found with id: " + songId));
 
-        if (playlist.getSongs().contains(song)) {
-            playlist.getSongs().remove(song);
-            playlistRepository.save(playlist);
+        // Validation: Is the song actually in the playlist before removing? (Throws 404)
+        if (!playlist.getSongs().contains(song)) {
+            throw new SongNotInPlaylistException("Song is not present in this playlist.");
         }
+
+        playlist.getSongs().remove(song);
+        playlistRepository.save(playlist);
     }
 
     @Override
@@ -74,6 +82,21 @@ public class PlaylistService implements IPlaylistService {
         return playlistRepository.findByUserId(user.getId())
                 .stream()
                 .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SongResponse> getPlaylistSongs(Long playlistId, String userEmail) {
+        // 1. Get playlist and verify if it belongs to the logged-in user
+        PlaylistEntity playlist = getPlaylistAndVerifyOwnership(playlistId, userEmail);
+
+        // 2. Map SongEntity list to SongResponse list
+        return playlist.getSongs().stream()
+                .map(song -> SongResponse.builder()
+                        .id(song.getId())
+                        .name(song.getName())
+                        .duration(song.getDuration())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -104,19 +127,5 @@ public class PlaylistService implements IPlaylistService {
                 .description(playlist.getDescription())
                 .songCount(count)
                 .build();
-    }
-    @Override
-    public List<SongResponse> getPlaylistSongs(Long playlistId, String userEmail) {
-        // 1. Get playlist and verify if it belongs to the logged-in user
-        PlaylistEntity playlist = getPlaylistAndVerifyOwnership(playlistId, userEmail);
-
-        // 2. Map SongEntity list to SongResponse list
-        return playlist.getSongs().stream()
-                .map(song -> SongResponse.builder()
-                        .id(song.getId())
-                        .name(song.getName())
-                        .duration(song.getDuration())
-                        .build())
-                .collect(Collectors.toList());
     }
 }

@@ -40,15 +40,15 @@ public class PlaylistController {
         return ResponseEntity.ok("Song added to playlist successfully.");
     }
 
-    // 3. Remove a song from a playlist
+    // 3. Remove a song from a playlist (Updated to return 204 No Content)
     @DeleteMapping("/playlists/{playlistId}/songs/{songId}")
-    public ResponseEntity<String> removeSongFromPlaylist(
+    public ResponseEntity<Void> removeSongFromPlaylist(
             @PathVariable Long playlistId,
             @PathVariable Long songId,
             Principal principal
     ) {
         playlistService.removeSongFromPlaylist(playlistId, songId, principal.getName());
-        return ResponseEntity.ok("Song removed from playlist successfully.");
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Returns 204
     }
 
     // 4. Get current user's playlists
