@@ -34,6 +34,7 @@ public class PlaylistService implements IPlaylistService {
 
         PlaylistEntity playlist = PlaylistEntity.builder()
                 .name(request.getName())
+                .description(request.getDescription())
                 .user(user)
                 .build();
 
