@@ -1,0 +1,200 @@
+<main class="page-shell">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Spotify tarzi admin paneli</p>
+      <h1>Angular frontend ile backend API'lerini ayni ekranda yonet.</h1>
+      <p class="hero-copy">
+        Bu ekran `localhost:8080` uzerindeki Spring Boot API'lerine baglanir. Sarki
+        listeleyebilir, kullanici kaydi olusturabilir, giris yapabilir ve token ile
+        sanatci, kategori, sarki ekleyebilirsiniz.
+      </p>
+    </div>
+
+    <div class="status-card">
+      <span class="status-label">Baglanti durumu</span>
+      <p>{{ statusMessage }}</p>
+      <p class="token-state" [class.active]="token">
+        {{ token ? 'JWT hazir' : 'JWT yok' }}
+      </p>
+      <button type="button" class="ghost-button" (click)="logout()" [disabled]="!token">
+        Oturumu kapat
+      </button>
+    </div>
+  </section>
+
+  <section *ngIf="errorMessage" class="alert error">{{ errorMessage }}</section>
+
+  <section class="grid">
+    <article class="panel">
+      <h2>Kullanici Kaydi</h2>
+      <form novalidate [formGroup]="registerForm" (ngSubmit)="register()">
+        <label>
+          <span>Ad</span>
+          <input type="text" formControlName="firstName" placeholder="Berkay" />
+          <small class="field-error" *ngIf="isInvalid(registerForm.controls.firstName)">
+            {{ getControlError(registerForm.controls.firstName) }}
+          </small>
+        </label>
+        <label>
+          <span>Soyad</span>
+          <input type="text" formControlName="lastName" placeholder="Eraydin" />
+          <small class="field-error" *ngIf="isInvalid(registerForm.controls.lastName)">
+            {{ getControlError(registerForm.controls.lastName) }}
+          </small>
+        </label>
+        <label>
+          <span>E-posta</span>
+          <input type="email" formControlName="email" placeholder="ornek@mail.com" />
+          <small class="field-error" *ngIf="isInvalid(registerForm.controls.email)">
+            {{ getControlError(registerForm.controls.email) }}
+          </small>
+        </label>
+        <label>
+          <span>Sifre</span>
+          <input type="password" formControlName="password" placeholder="En az 8 karakter" />
+          <small class="field-error" *ngIf="isInvalid(registerForm.controls.password)">
+            {{ getControlError(registerForm.controls.password) }}
+          </small>
+        </label>
+        <button type="submit">Kayit Olustur</button>
+      </form>
+    </article>
+
+    <article class="panel">
+      <h2>Giris Yap</h2>
+      <form novalidate [formGroup]="loginForm" (ngSubmit)="login()">
+        <label>
+          <span>E-posta</span>
+          <input type="email" formControlName="email" placeholder="ornek@mail.com" />
+          <small class="field-error" *ngIf="isInvalid(loginForm.controls.email)">
+            {{ getControlError(loginForm.controls.email) }}
+          </small>
+        </label>
+        <label>
+          <span>Sifre</span>
+          <input type="password" formControlName="password" placeholder="Sifreniz" />
+          <small class="field-error" *ngIf="isInvalid(loginForm.controls.password)">
+            {{ getControlError(loginForm.controls.password) }}
+          </small>
+        </label>
+        <button type="submit">Token Al</button>
+      </form>
+    </article>
+
+    <article class="panel">
+      <h2>Sanatci Ekle</h2>
+      <form [formGroup]="artistForm" (ngSubmit)="createArtist()">
+        <label>
+          <span>Sanatci Adi</span>
+          <input type="text" formControlName="name" placeholder="The Weeknd" />
+        </label>
+        <label>
+          <span>Ulke</span>
+          <input type="text" formControlName="country" placeholder="Canada" />
+        </label>
+        <label>
+          <span>Dogum Tarihi</span>
+          <input type="date" formControlName="birthDate" />
+        </label>
+        <label>
+          <span>Biyografi</span>
+          <textarea formControlName="biography" rows="4" placeholder="Kisa biyografi"></textarea>
+        </label>
+        <button type="submit">Sanatci Create</button>
+      </form>
+    </article>
+
+    <article class="panel">
+      <h2>Kategori Ekle</h2>
+      <form [formGroup]="categoryForm" (ngSubmit)="createCategory()">
+        <label>
+          <span>Kategori Adi</span>
+          <input type="text" formControlName="name" placeholder="Pop" />
+        </label>
+        <label>
+          <span>Aciklama</span>
+          <textarea formControlName="description" rows="4" placeholder="Kategori notu"></textarea>
+        </label>
+        <button type="submit">Kategori Create</button>
+      </form>
+    </article>
+  </section>
+
+  <section class="grid lower-grid">
+    <article class="panel wide">
+      <div class="panel-heading">
+        <div>
+          <h2>Sarki Ekle</h2>
+          <p>Yeni sarki olusturmak icin once bir sanatci ve kategori secin.</p>
+        </div>
+      </div>
+
+      <form class="song-form" [formGroup]="songForm" (ngSubmit)="createSong()">
+        <label>
+          <span>Sarki Adi</span>
+          <input type="text" formControlName="name" placeholder="Blinding Lights" />
+        </label>
+        <label>
+          <span>Sure (sn)</span>
+          <input type="number" formControlName="duration" placeholder="200" />
+        </label>
+        <label>
+          <span>Yayin Tarihi</span>
+          <input type="date" formControlName="releaseDate" />
+        </label>
+        <label>
+          <span>Sanatci</span>
+          <select formControlName="artistId">
+            <option [ngValue]="0">Sanatci secin</option>
+            <option *ngFor="let artist of artists" [ngValue]="artist.id">
+              {{ artist.name }}
+            </option>
+          </select>
+        </label>
+        <label>
+          <span>Kategori</span>
+          <select formControlName="categoryId">
+            <option [ngValue]="0">Kategori secin</option>
+            <option *ngFor="let category of categories" [ngValue]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" formControlName="active" />
+          <span>Aktif sarki</span>
+        </label>
+        <button type="submit" class="accent-button">Sarki Create</button>
+      </form>
+    </article>
+
+    <article class="panel wide">
+      <div class="panel-heading">
+        <div>
+          <h2>Sarki Listesi</h2>
+          <p>Backend'den gelen tum sarkilar.</p>
+        </div>
+        <button type="button" class="ghost-button" (click)="refreshAll()">Yenile</button>
+      </div>
+
+      <div *ngIf="loadingSongs" class="empty-state">Sarkilar yukleniyor...</div>
+      <div *ngIf="!loadingSongs && songs.length === 0" class="empty-state">
+        Henuz sarki yok. Formu kullanarak ilk kaydi ekleyebilirsiniz.
+      </div>
+
+      <div class="song-list" *ngIf="songs.length > 0">
+        <article class="song-card" *ngFor="let song of songs; trackBy: trackBySongId">
+          <div class="song-topline">
+            <h3>{{ song.name }}</h3>
+            <span class="pill" [class.inactive]="!song.active">
+              {{ song.active ? 'Aktif' : 'Pasif' }}
+            </span>
+          </div>
+          <p>{{ song.artist.name }} • {{ song.category.name }}</p>
+          <p>Sure: {{ song.duration }} sn</p>
+          <p>Yayin tarihi: {{ song.releaseDate || 'Belirtilmedi' }}</p>
+        </article>
+      </div>
+    </article>
+  </section>
+</main>
